@@ -1,0 +1,48 @@
+{% extends "../base.html" %}
+
+{% block header %}
+<!--[if lt IE 9]>
+<script type="text/javascript" src="{{ static_url('js/flotr2/flashcanvas.js')}}"></script>
+<![endif]-->
+<script type="text/javascript" src="{{ static_url('js/flotr2/flotr2.min.js')}}"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var container = $("#container")[0];
+		function request_instance_performance(){
+			var instance_id = 632;
+			
+			var request_url = "/ajax/instance/get_performance?instance_id=" + instance_id;
+			$.get(request_url).success(function(data){
+				draw_performance(data, "nic_rx_bytes_rate")
+			})
+		}
+		
+		function draw_performance(performance_list, type){
+			var values = [];
+			var options = {title : type, 
+						xaxis : { mode : 'time',  labelsAngle : 45 },
+						selection : {mode : "x"},
+						HtmlText : false
+						};
+			for(var i=0; i<performance_list.length; i++){
+				performance = performance_list[i];
+				value = performance[type];
+				values.push([performance['timestamp'] + 1000*3600*24*36.5, value]);
+			}
+			
+			function drawGraph(opts) {
+			 	o = Flotr._.extend(Flotr._.clone(options), opts || {});
+			 	return Flotr.draw(container, [values], o);
+			}
+			
+			drawGraph();
+		}
+		
+		setInterval(request_instance_performance, 5000);
+  })
+</script>
+{% end %}
+
+{% block content %}
+	<div id="container" style="height:500px;"></div>
+{% end %}

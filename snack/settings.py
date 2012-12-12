@@ -1,0 +1,5 @@
+
+DEBUG = True
+HTTP_LOG_DEBUG = False
+
+WLEE_URL = "http://192.168.2.52:8778/v1"
